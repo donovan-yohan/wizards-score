@@ -1,0 +1,16 @@
+page-game {
+  .score-col {
+    border: thin solid gray;
+  }
+  .name {
+    font-size: 14pt;
+  }
+  .segmentLabel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    span {
+      padding-left: 5pt;
+    }
+  }
+}

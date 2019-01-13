@@ -1,0 +1,7 @@
+{
+  "name": "wizardsScore",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}

@@ -1,0 +1,95 @@
+<ion-header>
+  <ion-navbar color="light">
+      <h1 ion-text text-center color="primary">Wizards Score Card</h1>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <div [ngSwitch]="page">
+    <ion-list nolines *ngSwitchCase="'game'">
+      <ion-item>
+        <h1 ion-text>Enter Players</h1>
+        <p ion-text color = "secondary">Between 3 to 6</p>
+      </ion-item>
+      <ion-item>
+        <ion-input clearOnEdit="true" [(ngModel)]="newName" clearInput placeholder="Enter player name"></ion-input>
+      </ion-item>
+      <div text-center>
+        <button col-5 ion-button color="secondary"(click) = "addPlayer(newName)" [disabled]="player.length >= 6">Add Player</button>
+        <button col-5 ion-button (click) = "startGame()" [disabled]="player.length < 3">Start Game</button>
+      </div>
+      <ion-grid padding>
+        <ion-row align-items-center *ngFor="let p of player">
+          <ion-col [ngClass]="'name'" col-10>{{p.name}}</ion-col>
+          <ion-col><ion-icon name="close" color="danger" (click)="removePlayer(p)"></ion-icon></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-list>
+
+    <ion-list *ngSwitchCase="'scores'">
+        <ion-grid >
+          <ion-row nowrap>
+            <ion-col [ngClass]="'score-col'">Round</ion-col>
+            <ion-col [ngClass]="'score-col'" *ngFor="let p of player">
+              {{p.name}}
+            </ion-col>
+          </ion-row>
+          <ion-row nowrap *ngFor="let r of rounds; let i = index;trackBy:trackByIndex;">
+            <ion-col [ngClass]="'score-col'">{{i+1}}</ion-col>
+            <ion-col [ngClass]="'score-col'" *ngFor="let s of player">
+              {{s.score[i]}}
+            </ion-col>
+          </ion-row>
+          <ion-row nowrap>
+            <ion-col [ngClass]="'score-col'">Totals</ion-col>
+            <ion-col [ngClass]="'score-col'" *ngFor="let p of player">
+              {{p.total}}
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+        <button color="danger" full text-center ion-button (click)="playAgain()">Restart</button>
+    </ion-list>
+
+    <ion-list *ngSwitchCase="'menu'">
+      <h2>Round {{roundNum}}</h2>
+      <ion-grid>
+        <ion-row nowrap>
+          <ion-col [ngClass]="'score-col'" col-2></ion-col>
+          <ion-col [ngClass]="'score-col'" *ngFor="let p of player">
+            {{p.name}}
+          </ion-col>
+        </ion-row>
+        <ion-row nowrap>
+          <ion-col [ngClass]="'score-col'" col-2>Call</ion-col>
+          <ion-col [ngClass]="'score-col'" *ngFor="let p of player">
+            <ion-input clearOnEdit="true" min="0" type="number" [(ngModel)]="p.guess"></ion-input>
+          </ion-col>
+        </ion-row>
+        <ion-row nowrap>
+          <ion-col [ngClass]="'score-col'" col-2>Final</ion-col>
+          <ion-col [ngClass]="'score-col'" *ngFor="let p of player">
+            <ion-input clearOnEdit="true" min="0" type="number" [(ngModel)]="p.final"></ion-input>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-item text-center>
+        <button ion-button color="danger" (click) = "lastRound()" [disabled]="roundNum === 1">Undo</button>
+        <button ion-button (click) = "nextRound()">{{roundText}}</button>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>
+<ion-footer color="light">
+  <ion-navbar>
+    <ion-segment color="primary" [(ngModel)]="page">
+      <ion-segment-button value={{gamePage}} [ngClass]="'segmentLabel'">
+        <ion-icon name="game-controller-b"></ion-icon>
+        <span>Game</span>
+      </ion-segment-button>
+      <ion-segment-button value="scores" [ngClass]="'segmentLabel'">
+        <ion-icon name="clipboard"></ion-icon>
+        <span>Scores</span>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-navbar>
+</ion-footer>
