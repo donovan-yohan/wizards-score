@@ -17,6 +17,7 @@ export class GamePage {
   private rounds = [];
   private totalRounds = 0;
   private id = 0;
+  private maxScore = -999;
 
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public toastCtrl: ToastController) {
 
@@ -50,14 +51,16 @@ export class GamePage {
     if(this.roundNum < this.totalRounds) {
       if(this.verifyInput()){
         this.player.forEach((p) => {
+          let score: number = 0;
           if(p.guess === p.final) {
-            p.score.push(20 + p.guess * 10);
-            p.total += 20 + p.guess * 10;
+            score = 20 + p.guess * 10;
           }
           else {
-            p.score.push(Math.abs(p.guess-p.final) * -10);
-            p.total += Math.abs(p.guess-p.final) * -10;
+            score = Math.abs(p.guess-p.final) * -10;
           }
+          p.score.push(score);
+          p.total += score;
+          this.maxScore = Math.max(this.maxScore, p.total);
           p.guess = p.final = null;
         });
         this.rounds = this.player[0].score;
@@ -81,8 +84,11 @@ export class GamePage {
       p.guess = null;
       p.final = null;
     });
+    this.maxScore = this.player[0].total;
+    this.player.forEach(p => {
+      this.maxScore = Math.max(this.maxScore, p.total);
+    });
     this.rounds = this.player[0].score;
-    console.log(this.player);
     this.undoNotification();
     this.roundNum--;
   }
