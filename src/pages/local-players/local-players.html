@@ -1,0 +1,36 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Start Local Game</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-list nolines>
+    <ion-item>
+      <h1 ion-text color="primary">Enter Players</h1>
+      <p ion-text color = "secondary">Between 3 to 6</p>
+    </ion-item>
+    <ion-item>
+      <ion-input clearOnEdit="true" [(ngModel)]="newName" clearInput placeholder="Enter player name"></ion-input>
+    </ion-item>
+    <div text-center padding-vertical>
+      <button col-5 ion-button color="secondary"(click) = "addPlayer(newName)"
+              [disabled]="this.database.getPlayers().length >= 6">
+              Add Player
+      </button>
+      <button col-5 ion-button color="primary" (click) = "startGame()"
+              [disabled]="this.database.getPlayers().length < 3">
+              Start Game
+      </button>
+    </div>
+    <ion-grid padding>
+      <ion-row align-items-center *ngFor="let p of this.database.getPlayers()">
+        <ion-col [ngClass]="'name'" col-10>{{p.name}}</ion-col>
+        <ion-col><ion-icon float-right name="close" color="danger" (click)="this.database.removePlayer(p)"></ion-icon></ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-list>
+</ion-content>
