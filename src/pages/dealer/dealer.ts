@@ -19,8 +19,8 @@ export class DealerPage {
   }
 
   chooseDealer(player: any) {
-    this.navCtrl.push(OrderPage, {
-      leader: this.database.getPlayer(player)
-    });
+    this.database.setLeader(player);
+    this.database.initialize();
+    this.navCtrl.push(OrderPage);
   }
 }

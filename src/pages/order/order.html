@@ -15,9 +15,9 @@
 <ion-content padding>
   <p ion-text>Order the players clockwise, starting with the dealer.</p>
   <ion-list>
-    <ion-item>{{this.leader.name}}</ion-item>
-  </ion-list>
-  <ion-list reorder="true">
-    <ion-item *ngFor="let p of this.database.getPlayers()">{{p.name}}</ion-item>
+    <ion-item>{{this.database.getPlayer(0).name}}</ion-item>
+    <ion-item-group reorder="true" (ionItemReorder)="this.database.reorderPlayers($event)">
+      <ion-item *ngFor="let p of this.database.getPlayers() | slice:1">{{p.name}}</ion-item>
+    </ion-item-group>
   </ion-list>
 </ion-content>

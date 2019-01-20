@@ -14,10 +14,10 @@
       <p ion-text color = "secondary">Between 3 to 6</p>
     </ion-item>
     <ion-item>
-      <ion-input clearOnEdit="true" [(ngModel)]="newName" clearInput placeholder="Enter player name"></ion-input>
+      <ion-input #nameField clearOnEdit="true" [(ngModel)]="newName" clearInput placeholder="Enter player name"></ion-input>
     </ion-item>
     <div text-center padding-vertical>
-      <button col-5 ion-button color="secondary"(click) = "addPlayer(newName)"
+      <button col-5 ion-button color="secondary" (click)="addPlayer(newName)"
               [disabled]="this.database.getPlayers().length >= 6">
               Add Player
       </button>

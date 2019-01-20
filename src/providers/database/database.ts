@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { reorderArray } from 'ionic-angular';
 
 /*
   Generated class for the DatabaseProvider provider.
@@ -21,8 +22,9 @@ export class DatabaseProvider {
   getPlayers() {
     return this.players;
   }
-  getPlayer(player: any) {
-    return this.players.find((p) => {return p.name === player.name});
+
+  getPlayer(index: number) {
+    return this.players[index];
   }
 
   addPlayer(name: string) {
@@ -40,6 +42,25 @@ export class DatabaseProvider {
 
   removePlayer(player: any) {
     this.players.splice(this.players.indexOf(player), 1);
+  }
+
+  reorderPlayers(indexes) {
+    indexes.from++;
+    indexes.to++;
+    this.players = reorderArray(this.players, indexes);
+  }
+
+  setLeader(player: any) {
+    const i = this.players.indexOf(player);
+    if (i > 0) {
+        this.players.splice(i, 1);
+        this.players.unshift(player);
+    }
+  }
+
+  initialize() {
+    this.totalRounds = 60 / this.players.length;
+    this.currentRound = 1;
   }
 
   reset() {

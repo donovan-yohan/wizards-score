@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
+import { IonicPage, NavController, NavParams, reorderArray } from 'ionic-angular';
+import { DatabaseProvider } from '../../providers/database/database';
 /**
  * Generated class for the OrderPage page.
  *
@@ -14,17 +14,10 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'order.html',
 })
 export class OrderPage {
-  private leader: any;
-
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-      this.leader = navParams.get('leader');
+  constructor(public navCtrl: NavController, public navParams: NavParams, public database: DatabaseProvider) {
   }
 
   ionViewDidLoad() {
 
-  }
-
-  order() {
-    console.log(this.leader)
   }
 }
