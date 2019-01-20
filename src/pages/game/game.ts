@@ -2,25 +2,30 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular';
 import { ToastController } from 'ionic-angular';
+import { DatabaseProvider } from '../../providers/database/database';
 
 @Component({
   selector: 'page-game',
   templateUrl: 'game.html'
 })
 export class GamePage {
-  private newName = "";
-  private roundText = "Next Round";
-  private player = [];
-  private gamePage = "game";
+  private currentDealer: number;
   private page = "game";
+
   private roundNum = 1;
-  private rounds = [];
   private totalRounds = 0;
   private id = 0;
   private maxScore = -999;
 
-  constructor(public navCtrl: NavController, public alertCtrl: AlertController, public toastCtrl: ToastController) {
+  constructor(public navCtrl: NavController, public alertCtrl: AlertController, public toastCtrl: ToastController, public database: DatabaseProvider) {
+    this.currentDealer = 0;
+  }
 
+  ionViewDidLoad() {
+    let round = this.database.getRound();
+    this.currentDealer = round % this.database.getPlayers().length;
+    this.dealerNotification(this.currentDealer);
+    this.database.nextRound();
   }
 
   addPlayer(newName) {
@@ -71,6 +76,9 @@ export class GamePage {
           this.roundText = "Finish";
         }
       }
+      let round = this.database.getRound();
+      this.currentDealer = round % this.database.getPlayers().length;
+      this.dealerNotification(this.currentDealer);
     }
     else {
       this.finish();
@@ -173,6 +181,18 @@ export class GamePage {
     }
     return true;
   }
+
+  dealerNotification(dealer: number) {
+    let rnd = this.database.getRound() + 1;
+    let alert = this.alertCtrl.create({
+      title: this.database.getPlayer(dealer).name + " is the Dealer!",
+      subTitle: this.database.getPlayer(dealer).name + ' should deal each player '
+                + rnd + (rnd === 1 ? ' card.' : ' cards.'),
+      buttons: ['OK']
+    });
+    alert.present();
+  }
+
   undoNotification() {
     let toast = this.toastCtrl.create({
       message: 'Undo successful!',

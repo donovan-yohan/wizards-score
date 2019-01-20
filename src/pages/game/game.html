@@ -1,99 +1,18 @@
 <ion-header>
-  <ion-navbar color="primary">
-      <h1 ion-text text-center color="white">Wizards Score Card</h1>
+  <ion-navbar>
+    <ion-title>Round {{this.database.getRound()}}</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
   <div [ngSwitch]="page" padding>
     <ion-list nolines *ngSwitchCase="'game'">
-      <ion-item>
-        <h1 ion-text color="primary">Enter Players</h1>
-        <p ion-text color = "secondary">Between 3 to 6</p>
+      <ion-item *ngFor="let p of this.database.getPlayers(); let i = index">
+        <ion-label>{{p.name}}</ion-label>
+        <ion-select [(ngModel)]="p.guess" placeholder="Guess">
+          <ion-option *ngFor="let o of this.database.getOptions()" [value]="o">{{o}}</ion-option>
+        </ion-select>
       </ion-item>
-      <ion-item>
-        <ion-input clearOnEdit="true" [(ngModel)]="newName" clearInput placeholder="Enter player name"></ion-input>
-      </ion-item>
-      <div text-center padding-vertical>
-        <button col-5 ion-button color="secondary"(click) = "addPlayer(newName)" [disabled]="player.length >= 6">Add Player</button>
-        <button col-5 ion-button color="primary" (click) = "startGame()" [disabled]="player.length < 3">Start Game</button>
-      </div>
-      <ion-grid padding>
-        <ion-row align-items-center *ngFor="let p of player">
-          <ion-col [ngClass]="'name'" col-10>{{p.name}}</ion-col>
-          <ion-col><ion-icon float-right name="close" color="danger" (click)="removePlayer(p)"></ion-icon></ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-list>
-
-    <ion-list *ngSwitchCase="'scores'">
-        <ion-list>
-          <ion-item>
-            <ion-label [ngClass]="'menu'" color="secondary">Player</ion-label>
-            <ion-label text-right color="secondary">Last</ion-label>
-            <ion-label text-right color="secondary">Total</ion-label>
-          </ion-item>
-          <ion-item *ngFor="let p of player">
-            <ion-label [ngClass]="p.total == maxScore ? 'menu winning' : 'menu'">{{p.name}}</ion-label>
-            <ion-label text-right>{{p.score[roundNum-2]}}</ion-label>
-            <ion-label text-right [ngClass]="p.total == maxScore ? 'winning' : ''">{{p.total}}</ion-label>
-          </ion-item>
-        </ion-list>
-        <!--
-        <ion-scroll scrollX="true">
-          <ion-row nowrap no-padding>
-            <ion-list no-padding>
-              <ion-item>
-                <ion-label color="secondary">Player</ion-label>
-                <ion-label *ngFor="let r of rounds; let i = index" text-right color="secondary">{{i}}</ion-label>
-                <ion-label text-right color="secondary">Total</ion-label>
-              </ion-item>
-              <ion-item *ngFor="let p of player">
-                <ion-label [ngClass]="p.total == maxScore ? 'winning' : ''">{{p.name}}</ion-label>
-                <ion-label *ngFor="let r of rounds; let i = index" text-right>{{p.score[i]}}</ion-label>
-                <ion-label text-right [ngClass]="p.total == maxScore ? 'winning' : ''">{{p.total}}</ion-label>
-              </ion-item>
-            </ion-list>
-          </ion-row>
-        </ion-scroll>
-        <button color="danger" full text-center ion-button (click)="playAgain()">Restart</button>
-        -->
-    </ion-list>
-
-    <ion-list *ngSwitchCase="'menu'">
-      <ion-item>
-        <h1 ion-text color="primary">Round {{roundNum}}</h1>
-      </ion-item>
-      <ion-list [ngClass]="'menu'">
-        <ion-item>
-          <ion-label bold [ngClass]="'menu'" color="secondary">Player</ion-label>
-          <ion-label bold text-right color="secondary">Guess</ion-label>
-          <ion-label bold text-right color="secondary">Final</ion-label>
-        </ion-item>
-        <ion-item *ngFor="let p of player">
-          <ion-label [ngClass]="'menu'">{{p.name}}</ion-label>
-          <ion-input text-right clearOnEdit="true" min="0" type="number" [(ngModel)]="p.guess"></ion-input>
-          <ion-input text-right clearOnEdit="true" min="0" type="number" [(ngModel)]="p.final"></ion-input>
-        </ion-item>
-      </ion-list>
-      <div text-center>
-        <button ion-button color="danger" (click) = "lastRound()" [disabled]="roundNum === 1">Undo</button>
-        <button ion-button (click) = "nextRound()">{{roundText}}</button>
-      </div>
     </ion-list>
   </div>
 </ion-content>
-<ion-footer>
-  <ion-navbar color="primary">
-    <ion-segment color="white" [(ngModel)]="page">
-      <ion-segment-button value={{gamePage}} [ngClass]="'segmentLabel'">
-        <ion-icon name="game-controller-b"></ion-icon>
-        <span>Game</span>
-      </ion-segment-button>
-      <ion-segment-button value="scores" [disabled]="gamePage === 'game'" [ngClass]="'segmentLabel'">
-        <ion-icon name="clipboard"></ion-icon>
-        <span>Scores</span>
-      </ion-segment-button>
-    </ion-segment>
-  </ion-navbar>
-</ion-footer>

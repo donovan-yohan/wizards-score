@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, reorderArray } from 'ionic-angular';
 import { DatabaseProvider } from '../../providers/database/database';
+import { GamePage } from '../game/game';
 /**
  * Generated class for the OrderPage page.
  *
@@ -19,5 +20,9 @@ export class OrderPage {
 
   ionViewDidLoad() {
 
+  }
+
+  gameStart() {
+    this.navCtrl.push(GamePage);
   }
 }

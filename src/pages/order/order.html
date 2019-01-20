@@ -20,4 +20,5 @@
       <ion-item *ngFor="let p of this.database.getPlayers() | slice:1">{{p.name}}</ion-item>
     </ion-item-group>
   </ion-list>
+  <button ion-button (click)="gameStart()">Start Game</button>
 </ion-content>

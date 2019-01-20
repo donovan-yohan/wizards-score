@@ -11,12 +11,16 @@ import { reorderArray } from 'ionic-angular';
 @Injectable()
 export class DatabaseProvider {
   private players: any;
+  private rounds: any;
+  private options: any;
   private currentRound: number;
   private totalRounds: number;
   private id = 0;
 
   constructor(public http: HttpClient) {
     this.players = [];
+    this.rounds = [];
+    this.options = [0];
   }
 
   getPlayers() {
@@ -25,6 +29,18 @@ export class DatabaseProvider {
 
   getPlayer(index: number) {
     return this.players[index];
+  }
+
+  getRound() {
+    return this.currentRound;
+  }
+
+  getTotalRounds() {
+    return this.totalRounds;
+  }
+
+  getOptions() {
+    return this.options;
   }
 
   addPlayer(name: string) {
@@ -58,9 +74,15 @@ export class DatabaseProvider {
     }
   }
 
+  nextRound() {
+    this.currentRound++;
+    this.rounds.push(this.currentRound);
+    this.options.push(this.currentRound);
+  }
+
   initialize() {
     this.totalRounds = 60 / this.players.length;
-    this.currentRound = 1;
+    this.currentRound = 0;
   }
 
   reset() {
