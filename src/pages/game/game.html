@@ -1,5 +1,10 @@
 <ion-header>
   <ion-navbar>
+    <ion-buttons start>
+      <button ion-button icon-only (click)="playAgain()">
+        <ion-icon name="refresh"></ion-icon>
+      </button>
+    </ion-buttons>
     <ion-title>Round {{this.database.getRound()}}</ion-title>
   </ion-navbar>
 </ion-header>
@@ -37,7 +42,14 @@
           <button item-end ion-button (click)="addTrick(p)" [disabled]="trick === this.database.getRound() + 1">Add Win</button>
         </ion-item>
       </ion-list>
-      <button ion-button (click)="nextRound()" [disabled]="!verified">Continue</button>
+      <button ion-button (click)="nextRound()" [disabled]="!verified || trick < this.database.getRound() + 1">Continue</button>
     </div>
   </div>
 </ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <button  ion-button block>
+      <ion-label>View Leaderboard</ion-label>
+  </button>
+  </ion-toolbar>
+</ion-footer>

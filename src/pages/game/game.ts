@@ -4,13 +4,15 @@ import { AlertController } from 'ionic-angular';
 import { ToastController } from 'ionic-angular';
 import { DatabaseProvider } from '../../providers/database/database';
 
+import { HomePage } from '../home/home';
+
 @Component({
   selector: 'page-game',
   templateUrl: 'game.html'
 })
 export class GamePage {
   private currentDealer: number;
-  private page = "guess";
+  private page;
   private trick: number;
   private verified: boolean;
 
@@ -20,15 +22,13 @@ export class GamePage {
   private maxScore = -999;
 
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public toastCtrl: ToastController, public database: DatabaseProvider) {
-    this.currentDealer = 0;
+    this.page = "guess";
     this.trick = 1;
     this.verified = false;
   }
 
   ionViewDidLoad() {
-    let round = this.database.getRound();
-    this.currentDealer = round % this.database.getPlayers().length;
-    this.dealerNotification(this.currentDealer);
+    this.dealerNotification();
     this.database.nextRound();
   }
 
@@ -52,40 +52,39 @@ export class GamePage {
     player.final--;
     this.trick--;
   }
-/**
-  nextRound() {
-    if(this.roundNum < this.totalRounds) {
-      if(this.verifyInput()){
-        this.player.forEach((p) => {
-          let score: number = 0;
-          if(p.guess === p.final) {
-            score = 20 + p.guess * 10;
-          }
-          else {
-            score = Math.abs(p.guess-p.final) * -10;
-          }
-          p.score.push(score);
-          p.total += score;
-          this.maxScore = Math.max(this.maxScore, p.total);
-          p.guess = p.final = null;
-        });
-        this.rounds = this.player[0].score;
 
-        this.roundNotification();
-        this.roundNum++;
-        if(this.roundNum === this.totalRounds) {
-          this.roundText = "Finish";
+  nextRound() {
+    if(this.database.getRound() < this.database.getTotalRounds()) {
+      this.database.getPlayers().forEach((p) => {
+        let score: number = 0;
+        if(p.guess === p.final) {
+          score = 20 + p.guess * 10;
         }
-      }
+        else {
+          score = Math.abs(p.guess-p.final) * -10;
+        }
+        p.scores.push(score);
+        p.total += score;
+        this.database.updateMaxScore(p.total);
+        p.guess = undefined;
+        p.final = 0;
+      });
+
       let round = this.database.getRound();
-      this.currentDealer = round % this.database.getPlayers().length;
-      this.dealerNotification(this.currentDealer);
+
+      this.roundNotification(round);
+      this.dealerNotification();
+      this.database.nextRound();
+
+      this.trick = 1;
+      this.verified = false;
+      this.page = "guess";
     }
     else {
       this.finish();
     }
   }
-
+/**
   lastRound() {
     console.log(this.player);
     this.player.forEach(p => {
@@ -106,6 +105,7 @@ export class GamePage {
     this.page = "scores";
     this.gamePage = "scores";
   }
+*/
 
   playAgain() {
     let alert = this.alertCtrl.create({
@@ -122,12 +122,12 @@ export class GamePage {
      {
        text: 'Yes',
        handler: () => {
-         this.gamePage = "game";
-         this.page = "game";
-         this.player = [];
-         this.roundText = "Next Round";
-         this.rounds = [];
          console.log('restarting...');
+         this.navCtrl.setRoot(HomePage);
+         this.database.reset();
+         this.currentDealer = 0;
+         this.trick = 1;
+         this.verified = false;
        }
      }
     ]
@@ -135,60 +135,12 @@ export class GamePage {
     alert.present();
   }
 
-  verifyInput(){
-    let a = 0, b = 0;
-    for(let i = 0; i < this.player.length; i++) {
-      let p = this.player[i];
-
-      if (p.guess === null || p.final === null) {
-        let alert = this.alertCtrl.create({
-          title: 'Empty Fields',
-          subTitle: 'Make sure all fields have values entered.',
-          buttons: ['OK']
-        });
-        alert.present();
-        return false;
-      }
-      if (p.guess > this.roundNum) {
-        let alert = this.alertCtrl.create({
-          title: 'Invalid Guess',
-          subTitle: 'A player cannot win more rounds than the number played.',
-          buttons: ['OK']
-        });
-        alert.present();
-        return false;
-      }
-      a += parseInt(p.guess)
-      b += parseInt(p.final)
-    }
-
-    if (a === this.roundNum) {
-      let alert = this.alertCtrl.create({
-        title: 'Check Guess Total',
-        subTitle: 'Total guesses cannot be equal to the number of rounds played.',
-        buttons: ['OK']
-      });
-      alert.present();
-      return false;
-    }
-    if (!(b === this.roundNum)) {
-      let alert = this.alertCtrl.create({
-        title: 'Check Final Total',
-        subTitle: 'Total number of rounds won must equal number of rounds played.',
-        buttons: ['OK']
-      });
-      alert.present();
-      return false;
-    }
-    return true;
-  }
-*/
-  dealerNotification(dealer: number) {
-    let rnd = this.database.getRound() + 1;
+  dealerNotification() {
+    let cards = this.database.getRound() + 1;
     let alert = this.alertCtrl.create({
-      title: this.database.getPlayer(dealer).name + " is the Dealer!",
-      subTitle: this.database.getPlayer(dealer).name + ' should deal each player '
-                + rnd + (rnd === 1 ? ' card.' : ' cards.'),
+      title: this.database.getPlayer(0).name + " is the Dealer!",
+      subTitle: this.database.getPlayer(0).name + ' should deal each player '
+                + cards + (cards === 1 ? ' card.' : ' cards.'),
       buttons: ['OK']
     });
     alert.present();
@@ -213,11 +165,11 @@ export class GamePage {
     toast.present();
   }
 
-  roundNotification() {
+  roundNotification(num) {
     let toast = this.toastCtrl.create({
-      message: 'Round ' + this.roundNum + ' recorded successfully!',
+      message: 'Round ' + num + ' recorded successfully!',
       duration: 3000,
-      position: 'top'
+      position: 'bottom'
     });
     toast.present();
   }

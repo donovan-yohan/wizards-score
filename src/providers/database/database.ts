@@ -16,6 +16,7 @@ export class DatabaseProvider {
   private currentRound: number;
   private totalRounds: number;
   private id = 0;
+  private maxScore = -999;
 
   constructor(public http: HttpClient) {
     this.players = [];
@@ -41,6 +42,14 @@ export class DatabaseProvider {
 
   getOptions() {
     return this.options;
+  }
+
+  getMaxScore() {
+    return this.maxScore;
+  }
+
+  updateMaxScore(total) {
+    this.maxScore = Math.max(this.maxScore, total);
   }
 
   addPlayer(name: string) {
