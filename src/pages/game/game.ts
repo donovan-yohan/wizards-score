@@ -10,7 +10,9 @@ import { DatabaseProvider } from '../../providers/database/database';
 })
 export class GamePage {
   private currentDealer: number;
-  private page = "game";
+  private page = "guess";
+  private trick: number;
+  private verified: boolean;
 
   private roundNum = 1;
   private totalRounds = 0;
@@ -19,6 +21,8 @@ export class GamePage {
 
   constructor(public navCtrl: NavController, public alertCtrl: AlertController, public toastCtrl: ToastController, public database: DatabaseProvider) {
     this.currentDealer = 0;
+    this.trick = 1;
+    this.verified = false;
   }
 
   ionViewDidLoad() {
@@ -28,30 +32,27 @@ export class GamePage {
     this.database.nextRound();
   }
 
-  addPlayer(newName) {
-    if(!(newName === "")) {
-      this.player.push({
-        id: this.id++,
-        name: newName,
-        score: [],
-        guess: null,
-        final: null,
-        total: 0,
-      });
-      this.newName = "";
+  lastGuessEntered(index: number) {
+    if (index > 0) {
+      return this.database.getPlayer(index-1).guess !== undefined;
+    } else {
+      return true;
     }
   }
 
-  removePlayer(p) {
-    this.player.splice(this.player.indexOf(p), 1)
+  addTrick(player: any) {
+    player.final++;
+    this.trick++;
+    if(this.trick > this.database.getRound() && !this.verified) {
+      this.verifyNotification();
+    }
   }
 
-  startGame() {
-    this.gamePage = "menu";
-    this.page = "menu";
-    this.totalRounds = 60 / this.player.length;
+  removeTrick(player: any) {
+    player.final--;
+    this.trick--;
   }
-
+/**
   nextRound() {
     if(this.roundNum < this.totalRounds) {
       if(this.verifyInput()){
@@ -181,7 +182,7 @@ export class GamePage {
     }
     return true;
   }
-
+*/
   dealerNotification(dealer: number) {
     let rnd = this.database.getRound() + 1;
     let alert = this.alertCtrl.create({
@@ -193,17 +194,22 @@ export class GamePage {
     alert.present();
   }
 
+  verifyNotification() {
+    let toast = this.toastCtrl.create({
+      message: 'All tricks completed! Review score and press continue when ready.',
+      duration: 3000,
+      position: 'bottom'
+    });
+    toast.present();
+    this.verified = true;
+  }
+
   undoNotification() {
     let toast = this.toastCtrl.create({
       message: 'Undo successful!',
       duration: 3000,
       position: 'top'
     });
-
-    toast.onDidDismiss(() => {
-      console.log('Dismissed undo notification');
-    });
-
     toast.present();
   }
 
@@ -213,15 +219,11 @@ export class GamePage {
       duration: 3000,
       position: 'top'
     });
-
-    toast.onDidDismiss(() => {
-      console.log('Dismissed score notification');
-    });
-
     toast.present();
   }
 
   ngOnInit() {
+
   }
 
   trackByIndex(index: number, obj: any): any {

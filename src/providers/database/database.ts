@@ -49,8 +49,8 @@ export class DatabaseProvider {
         id: this.id++,
         name: name,
         scores: [],
-        guess: null,
-        final: null,
+        guess: undefined,
+        final: 0,
         total: 0,
       });
     }
@@ -78,11 +78,37 @@ export class DatabaseProvider {
     this.currentRound++;
     this.rounds.push(this.currentRound);
     this.options.push(this.currentRound);
+    this.players.push(this.players.shift());
   }
 
   initialize() {
     this.totalRounds = 60 / this.players.length;
     this.currentRound = 0;
+    this.resetPlayerInput();
+    this.rounds = [];
+    this.options = [0];
+  }
+
+  screwDealer(index: number, value: number): boolean {
+    if(index === this.players.length - 1) {
+      let guessTotal = 0;
+      this.players.forEach((p)=> {
+        if (this.players.indexOf(p) !== this.players.length - 1) {
+          guessTotal += p.guess;
+        }
+      });
+      if(guessTotal + value === this.currentRound) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  resetPlayerInput() {
+      this.players.forEach(p => {
+        p.guess = undefined;
+        p.final = 0;
+      });
   }
 
   reset() {

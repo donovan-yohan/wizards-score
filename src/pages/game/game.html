@@ -6,13 +6,38 @@
 
 <ion-content padding>
   <div [ngSwitch]="page" padding>
-    <ion-list nolines *ngSwitchCase="'game'">
-      <ion-item *ngFor="let p of this.database.getPlayers(); let i = index">
-        <ion-label>{{p.name}}</ion-label>
-        <ion-select [(ngModel)]="p.guess" placeholder="Guess">
-          <ion-option *ngFor="let o of this.database.getOptions()" [value]="o">{{o}}</ion-option>
-        </ion-select>
-      </ion-item>
-    </ion-list>
+    <div *ngSwitchCase="'guess'">
+      <h1 ion-text>Guessing Phase</h1>
+      <p ion-text>Have each player guess how many tricks they will win.</p>
+      <ion-list>
+        <ion-item *ngFor="let p of this.database.getPlayers(); let i = index">
+          <ion-label>{{p.name}}</ion-label>
+          <ion-select [(ngModel)]="p.guess" placeholder="Guess" [disabled]=!lastGuessEntered(i)>
+            <ion-option *ngFor="let o of this.database.getOptions()" [value]="o"
+                        [disabled]="this.database.screwDealer(i, o)">
+              {{o}}
+            </ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+      <button ion-button [disabled]="this.database.getPlayer(this.database.getPlayers().length-1).guess === undefined"
+              (click)="page='game'">
+              Start Round
+      </button>
+    </div>
+    <div *ngSwitchCase="'game'">
+      <h1 ion-text *ngIf="!verified">Trick {{trick}}</h1>
+      <h1 ion-text *ngIf="verified">Trick Review</h1>
+      <ion-list>
+        <ion-item *ngFor="let p of this.database.getPlayers(); let i = index">
+          <ion-label>{{p.name}}</ion-label>
+          <ion-label>{{p.guess}}</ion-label>
+          <ion-label>{{p.final}}</ion-label>
+          <button item-right ion-button outline (click)="removeTrick(p)" [disabled]="p.final === 0">X</button>
+          <button item-end ion-button (click)="addTrick(p)" [disabled]="trick === this.database.getRound() + 1">Add Win</button>
+        </ion-item>
+      </ion-list>
+      <button ion-button (click)="nextRound()" [disabled]="!verified">Continue</button>
+    </div>
   </div>
 </ion-content>

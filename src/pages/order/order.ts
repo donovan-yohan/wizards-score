@@ -23,6 +23,8 @@ export class OrderPage {
   }
 
   gameStart() {
+    this.navCtrl.pop();
     this.navCtrl.push(GamePage);
+    this.database.initialize();
   }
 }

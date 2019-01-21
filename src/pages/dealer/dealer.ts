@@ -20,7 +20,6 @@ export class DealerPage {
 
   chooseDealer(player: any) {
     this.database.setLeader(player);
-    this.database.initialize();
     this.navCtrl.push(OrderPage);
   }
 }
