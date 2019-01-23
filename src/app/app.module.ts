@@ -9,6 +9,7 @@ import { HomePage } from '../pages/home/home';
 import { LocalPlayersPage } from '../pages/local-players/local-players';
 import { DealerPage } from '../pages/dealer/dealer';
 import { OrderPage } from '../pages/order/order';
+import { ScorePage } from '../pages/score/score';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -21,7 +22,8 @@ import { DatabaseProvider } from '../providers/database/database';
     HomePage,
     LocalPlayersPage,
     DealerPage,
-    OrderPage
+    OrderPage,
+    ScorePage
   ],
   imports: [
     BrowserModule,
@@ -35,7 +37,8 @@ import { DatabaseProvider } from '../providers/database/database';
     HomePage,
     LocalPlayersPage,
     DealerPage,
-    OrderPage
+    OrderPage,
+    ScorePage
   ],
   providers: [
     StatusBar,

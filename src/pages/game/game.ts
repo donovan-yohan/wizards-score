@@ -5,13 +5,13 @@ import { ToastController } from 'ionic-angular';
 import { DatabaseProvider } from '../../providers/database/database';
 
 import { HomePage } from '../home/home';
+import { ScorePage } from '../score/score';
 
 @Component({
   selector: 'page-game',
   templateUrl: 'game.html'
 })
 export class GamePage {
-  private currentDealer: number;
   private page;
   private trick: number;
   private verified: boolean;
@@ -54,58 +54,19 @@ export class GamePage {
   }
 
   nextRound() {
-    if(this.database.getRound() < this.database.getTotalRounds()) {
-      this.database.getPlayers().forEach((p) => {
-        let score: number = 0;
-        if(p.guess === p.final) {
-          score = 20 + p.guess * 10;
-        }
-        else {
-          score = Math.abs(p.guess-p.final) * -10;
-        }
-        p.scores.push(score);
-        p.total += score;
-        this.database.updateMaxScore(p.total);
-        p.guess = undefined;
-        p.final = 0;
-      });
+    this.database.calculateScores();
 
-      let round = this.database.getRound();
+    this.roundNotification(this.database.getRound());
+    this.dealerNotification();
+    this.database.nextRound();
 
-      this.roundNotification(round);
-      this.dealerNotification();
-      this.database.nextRound();
+    this.trick = 1;
+    this.verified = false;
+    this.page = "guess";
+    if(this.database.getRound() > this.database.getTotalRounds())
+      this.navCtrl.setRoot(ScorePage);
 
-      this.trick = 1;
-      this.verified = false;
-      this.page = "guess";
-    }
-    else {
-      this.finish();
-    }
   }
-/**
-  lastRound() {
-    console.log(this.player);
-    this.player.forEach(p => {
-      p.total -= p.score.pop();
-      p.guess = null;
-      p.final = null;
-    });
-    this.maxScore = this.player[0].total;
-    this.player.forEach(p => {
-      this.maxScore = Math.max(this.maxScore, p.total);
-    });
-    this.rounds = this.player[0].score;
-    this.undoNotification();
-    this.roundNum--;
-  }
-
-  finish() {
-    this.page = "scores";
-    this.gamePage = "scores";
-  }
-*/
 
   playAgain() {
     let alert = this.alertCtrl.create({
@@ -125,7 +86,6 @@ export class GamePage {
          console.log('restarting...');
          this.navCtrl.setRoot(HomePage);
          this.database.reset();
-         this.currentDealer = 0;
          this.trick = 1;
          this.verified = false;
        }
@@ -150,35 +110,24 @@ export class GamePage {
     let toast = this.toastCtrl.create({
       message: 'All tricks completed! Review score and press continue when ready.',
       duration: 3000,
-      position: 'bottom'
+      position: 'bottom',
+      showCloseButton: true
     });
     toast.present();
     this.verified = true;
-  }
-
-  undoNotification() {
-    let toast = this.toastCtrl.create({
-      message: 'Undo successful!',
-      duration: 3000,
-      position: 'top'
-    });
-    toast.present();
   }
 
   roundNotification(num) {
     let toast = this.toastCtrl.create({
       message: 'Round ' + num + ' recorded successfully!',
       duration: 3000,
-      position: 'bottom'
+      position: 'bottom',
+      showCloseButton: true
     });
     toast.present();
   }
 
-  ngOnInit() {
-
-  }
-
-  trackByIndex(index: number, obj: any): any {
-    return index;
+  viewScore() {
+    this.navCtrl.push(ScorePage);
   }
 }

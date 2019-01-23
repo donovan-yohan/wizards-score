@@ -1,0 +1,21 @@
+page-score {
+  ion-scroll {
+    width: 100%;
+    height:100%;
+  }
+  ion-row {
+    overflow-x: auto;
+    align-items: center;
+    border-bottom-style: solid;
+    border-bottom-color: color($colors, light);
+    border-bottom-width: 1px;
+  }
+  ion-label {
+    font-size: 12pt;
+  }
+
+  .first {
+    color: color($colors, secondary);
+    font-weight: bold;
+  }
+}

@@ -1,0 +1,35 @@
+<!--
+  Generated template for the ScorePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="playAgain()">
+        <ion-icon name="refresh"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>Leaderboard</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-scroll scrollX="true">
+    <ion-row nowrap>
+      <ion-label col-1 [ngClass]="'heading'">#</ion-label>
+      <ion-label col-5 [ngClass]="'heading'">Player</ion-label>
+      <ion-label [ngClass]="'heading'" text-right>Score</ion-label>
+      <!--<div *ngFor="let r of this.database.getRounds() | slice:1"><ion-label>{{r}}</ion-label></div>-->
+      <ion-label [ngClass]="'heading'" item-end text-right>Last</ion-label>
+    </ion-row>
+    <ion-row nowrap *ngFor="let p of this.database.getLeaderboard(); index as i; first as isFirst" >
+      <ion-label col-1 [ngClass]="isFirst ? 'first' : ''">{{i+1}}</ion-label>
+      <ion-label col-5 [ngClass]="isFirst ? 'first' : ''">{{p.name}}</ion-label>
+      <ion-label [ngClass]="isFirst ? 'first' : ''" text-right>{{p.total}}</ion-label>
+      <!--<div *ngFor="let s of p.scores"><ion-label>{{s}}</ion-label></div>-->
+      <ion-label text-right item-end>{{p.scores[0]}}</ion-label>
+    </ion-row>
+  </ion-scroll>
+</ion-content>

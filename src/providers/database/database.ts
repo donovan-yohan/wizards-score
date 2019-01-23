@@ -11,12 +11,12 @@ import { reorderArray } from 'ionic-angular';
 @Injectable()
 export class DatabaseProvider {
   private players: any;
+  private leaderboard: any;
   private rounds: any;
   private options: any;
   private currentRound: number;
   private totalRounds: number;
   private id = 0;
-  private maxScore = -999;
 
   constructor(public http: HttpClient) {
     this.players = [];
@@ -36,6 +36,10 @@ export class DatabaseProvider {
     return this.currentRound;
   }
 
+  getRounds() {
+    return this.rounds;
+  }
+
   getTotalRounds() {
     return this.totalRounds;
   }
@@ -44,12 +48,27 @@ export class DatabaseProvider {
     return this.options;
   }
 
-  getMaxScore() {
-    return this.maxScore;
+  getLeaderboard() {
+    return this.leaderboard;
   }
 
-  updateMaxScore(total) {
-    this.maxScore = Math.max(this.maxScore, total);
+  calculateScores() {
+    this.players.forEach((p) => {
+      let score: number = 0;
+      if(p.guess === p.final) {
+        score = 20 + p.guess * 10;
+      }
+      else {
+        score = Math.abs(p.guess-p.final) * -10;
+      }
+      p.scores.unshift(score);
+      p.total += score;
+
+      this.updateLeaderboard();
+
+      p.guess = undefined;
+      p.final = 0;
+    });
   }
 
   addPlayer(name: string) {
@@ -85,7 +104,7 @@ export class DatabaseProvider {
 
   nextRound() {
     this.currentRound++;
-    this.rounds.push(this.currentRound);
+    this.rounds.unshift(this.currentRound);
     this.options.push(this.currentRound);
     this.players.push(this.players.shift());
   }
@@ -96,6 +115,7 @@ export class DatabaseProvider {
     this.resetPlayerInput();
     this.rounds = [];
     this.options = [0];
+    this.leaderboard = this.players.slice();
   }
 
   screwDealer(index: number, value: number): boolean {
@@ -113,6 +133,10 @@ export class DatabaseProvider {
     return false;
   }
 
+  updateLeaderboard() {
+    this.leaderboard.sort((a, b)=>{return b.total - a.total});
+  }
+
   resetPlayerInput() {
       this.players.forEach(p => {
         p.guess = undefined;
@@ -125,5 +149,7 @@ export class DatabaseProvider {
     this.currentRound = 0;
     this.totalRounds = 0;
     this.id = 0;
+    this.rounds = [];
+    this.options = [0];
   }
 }

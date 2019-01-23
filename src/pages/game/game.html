@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar>
-    <ion-buttons start>
+    <ion-buttons end>
       <button ion-button icon-only (click)="playAgain()">
         <ion-icon name="refresh"></ion-icon>
       </button>
@@ -15,6 +15,10 @@
       <h1 ion-text>Guessing Phase</h1>
       <p ion-text>Have each player guess how many tricks they will win.</p>
       <ion-list>
+        <ion-item>
+          <ion-label [ngClass]="'heading'">Player</ion-label>
+          <ion-label [ngClass]="'heading'" item-end text-right>Guess</ion-label>
+        </ion-item>
         <ion-item *ngFor="let p of this.database.getPlayers(); let i = index">
           <ion-label>{{p.name}}</ion-label>
           <ion-select [(ngModel)]="p.guess" placeholder="Guess" [disabled]=!lastGuessEntered(i)>
@@ -25,31 +29,45 @@
           </ion-select>
         </ion-item>
       </ion-list>
-      <button ion-button [disabled]="this.database.getPlayer(this.database.getPlayers().length-1).guess === undefined"
-              (click)="page='game'">
-              Start Round
-      </button>
+      <div text-center>
+        <button ion-button [disabled]="this.database.getPlayer(this.database.getPlayers().length-1).guess === undefined"
+                (click)="page='game'">
+                Start Round
+        </button>
+      </div>
     </div>
     <div *ngSwitchCase="'game'">
       <h1 ion-text *ngIf="!verified">Trick {{trick}}</h1>
       <h1 ion-text *ngIf="verified">Trick Review</h1>
       <ion-list>
-        <ion-item *ngFor="let p of this.database.getPlayers(); let i = index">
-          <ion-label>{{p.name}}</ion-label>
-          <ion-label>{{p.guess}}</ion-label>
-          <ion-label>{{p.final}}</ion-label>
-          <button item-right ion-button outline (click)="removeTrick(p)" [disabled]="p.final === 0">X</button>
-          <button item-end ion-button (click)="addTrick(p)" [disabled]="trick === this.database.getRound() + 1">Add Win</button>
-        </ion-item>
+        <ion-row nowrap>
+          <ion-col col-4><ion-label [ngClass]="'heading'">Player</ion-label></ion-col>
+          <ion-col><ion-label [ngClass]="'heading'" item-end text-right>Guess</ion-label></ion-col>
+          <ion-col><ion-label [ngClass]="'heading'" item-end text-right>Tricks</ion-label></ion-col>
+          <ion-col col-3><ion-label [ngClass]="'heading'" item-end text-right></ion-label></ion-col>
+        </ion-row>
+        <ion-row *ngFor="let p of this.database.getPlayers(); let i = index">
+          <ion-col col-4><ion-label>{{p.name}}</ion-label></ion-col>
+          <ion-col text-right item-end><ion-label [ngClass]="'guess'">{{p.guess}}</ion-label></ion-col>
+          <ion-col text-right item-end><ion-label [ngClass]="p.guess === p.final ? 'correct final' : 'final'">{{p.final}}</ion-label></ion-col>
+          <ion-col col-3 text-right>
+            <button item-end ion-button clear icon-only (click)="removeTrick(p)" [disabled]="p.final === 0">
+              <ion-icon name="remove"></ion-icon>
+            </button>
+            <button item-end ion-button clear icon-only (click)="addTrick(p)" [disabled]="trick === this.database.getRound() + 1">
+              <ion-icon name="add-circle"></ion-icon>
+            </button>
+          </ion-col>
+        </ion-row>
       </ion-list>
-      <button ion-button (click)="nextRound()" [disabled]="!verified || trick < this.database.getRound() + 1">Continue</button>
+      <div text-center>
+        <button ion-button (click)="nextRound()" [disabled]="!verified || trick < this.database.getRound() + 1">Continue</button>
+      </div>
     </div>
   </div>
 </ion-content>
 <ion-footer>
   <ion-toolbar>
-    <button  ion-button block>
-      <ion-label>View Leaderboard</ion-label>
-  </button>
+    <button  ion-button block (click)="viewScore()">View Leaderboard</button>
   </ion-toolbar>
 </ion-footer>

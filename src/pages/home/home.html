@@ -12,6 +12,8 @@
 
 
 <ion-content padding>
-  <button ion-button (click)="startLocal()">Local</button>
-  <button ion-button [disabled]="true">Online</button>
+  <div text-center>
+  <button ion-button block (click)="startLocal()">Local</button>
+  <button ion-button block [disabled]="true">Online</button>
+  </div>
 </ion-content>
